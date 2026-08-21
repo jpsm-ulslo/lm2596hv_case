@@ -293,7 +293,7 @@ def create_lid_skirt(
 
         snap_radius = snap["radius"]
         snap_length = snap["length"]
-        snap_z = snap["z"]
+        snap_z = snap["z"] - skirt_bottom_z
 
         snap_y = cy - snap_length / 2
 
