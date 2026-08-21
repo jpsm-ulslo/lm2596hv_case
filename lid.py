@@ -286,6 +286,33 @@ def create_lid_skirt(
 
     skirt = outer.cut(inner)
 
+    # Add matching half-cylinder beads to both long sides.
+    snap = geometry["snap"]
+
+    if snap["enabled"]:
+
+        snap_radius = snap["radius"]
+        snap_length = snap["length"]
+        snap_z = snap["z"]
+
+        snap_y = cy - snap_length / 2
+
+        for snap_x in (
+            cx - outer_width / 2,
+            cx + outer_width / 2,
+        ):
+
+            bead = cq.Solid.makeCylinder(
+                snap_radius,
+                snap_length,
+                cq.Vector(snap_x, snap_y, snap_z),
+                cq.Vector(0, 1, 0),
+            )
+
+            skirt = skirt.union(
+                cq.Workplane("XY").newObject([bead])
+            )
+
     # --------------------------------------------------------
     # Position below lid
     # --------------------------------------------------------

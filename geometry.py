@@ -51,6 +51,13 @@ DEFAULT_CONFIG = {
 
     # Lid top edge fillet
     "lid_top_fillet": 0.5,
+
+    # Long-side snap fit
+    "snap_enabled": True,
+    "snap_radius": 0.75,
+    "snap_groove_clearance": 0.10,
+    "snap_length": 20.0,
+    "snap_z_offset": 3.0,
 }
 
 
@@ -212,6 +219,11 @@ def create_geometry(
     skirt_bottom_z = (
         skirt_top_z
         - cfg["skirt_height"]
+    )
+
+    snap_z = (
+        skirt_bottom_z
+        + cfg["snap_z_offset"]
     )
 
     # --------------------------------------------------------
@@ -475,6 +487,21 @@ def create_geometry(
 
             "peg_clearance":
                 cfg["peg_clearance"],
+        },
+
+        # ====================================================
+        # SNAP FIT
+        # ====================================================
+
+        "snap": {
+            "enabled": cfg["snap_enabled"],
+            "radius": cfg["snap_radius"],
+            "groove_radius": (
+                cfg["snap_radius"]
+                + cfg["snap_groove_clearance"]
+            ),
+            "length": cfg["snap_length"],
+            "z": snap_z,
         },
     }
 

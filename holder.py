@@ -95,6 +95,35 @@ def create_holder_shell(geometry):
 
     holder = outer.cut(inner)
 
+    # Cut matching half-cylinder grooves into both long inner walls.
+    snap = geometry["snap"]
+
+    if snap["enabled"]:
+
+        snap_length = snap["length"]
+        snap_z = snap["z"]
+        snap_y = cy - snap_length / 2
+
+        groove = cq.Workplane("XY")
+
+        for snap_x in (
+            cx - inner_width / 2,
+            cx + inner_width / 2,
+        ):
+
+            cutter = cq.Solid.makeCylinder(
+                snap["groove_radius"],
+                snap_length,
+                cq.Vector(snap_x, snap_y, snap_z),
+                cq.Vector(0, 1, 0),
+            )
+
+            groove = groove.union(
+                cq.Workplane("XY").newObject([cutter])
+            )
+
+        holder = holder.cut(groove)
+
     return holder
 
 

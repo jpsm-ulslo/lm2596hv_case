@@ -63,6 +63,16 @@ CONFIG = {
 
     "lid_corner_radius": 3.0,
     "lid_top_fillet": 0.5,
+
+    # --------------------------------------------------------
+    # Long-side snap fit
+    # --------------------------------------------------------
+
+    "snap_enabled": True,
+    "snap_radius": 0.75,
+    "snap_groove_clearance": 0.10,
+    "snap_length": 20.0,
+    "snap_z_offset": 3.0,
 }
 
 
