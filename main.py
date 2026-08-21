@@ -84,6 +84,12 @@ CONFIG = {
     "side_hole_top_z": 10.0,
     "side_hole_spacing": 22.0,
     "side_hole_corner_radius": 2.0,
+
+    # --------------------------------------------------------
+    # 3MF print layout
+    # --------------------------------------------------------
+
+    "print_layout_gap": 5.0,
 }
 
 
@@ -112,7 +118,8 @@ def create_output_directory():
 
 def export_models(
     holder,
-    lid
+    lid,
+    geometry
 ):
 
     holder_file = os.path.join(
@@ -125,6 +132,11 @@ def export_models(
         "lid.stl"
     )
 
+    print_file = os.path.join(
+        OUTPUT_DIR,
+        "lm2596hv_case_print.3mf"
+    )
+
     cq.exporters.export(
         holder,
         holder_file
@@ -133,6 +145,39 @@ def export_models(
     cq.exporters.export(
         lid,
         lid_file
+    )
+
+    print_lid = lid.rotate(
+        (
+            0,
+            geometry["center"]["y"],
+            0
+        ),
+        (
+            1,
+            geometry["center"]["y"],
+            0
+        ),
+        180
+    )
+
+    holder_box = holder.val().BoundingBox()
+    lid_box = print_lid.val().BoundingBox()
+
+    print_lid = print_lid.translate(
+        (
+            holder_box.xmax
+            + geometry["config"]["print_layout_gap"]
+            - lid_box.xmin,
+            holder_box.ymin - lid_box.ymin,
+            -lid_box.zmin
+        )
+    )
+
+    cq.exporters.export(
+        [holder.val(), print_lid.val()],
+        print_file,
+        exportType="3MF"
     )
 
     print()
@@ -144,6 +189,10 @@ def export_models(
 
     print(
         f"  {lid_file}"
+    )
+
+    print(
+        f"  {print_file}"
     )
 
 
@@ -517,7 +566,8 @@ def main():
 
     export_models(
         holder,
-        lid
+        lid,
+        geometry
     )
 
     # ========================================================
