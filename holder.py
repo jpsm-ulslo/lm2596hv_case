@@ -101,6 +101,7 @@ def create_holder_shell(geometry):
     if snap["enabled"]:
 
         snap_length = snap["length"]
+        snap_short_length = snap["short_length"]
         snap_z = snap["z"]
         snap_y = cy - snap_length / 2
 
@@ -122,7 +123,89 @@ def create_holder_shell(geometry):
                 cq.Workplane("XY").newObject([cutter])
             )
 
+        snap_x = cx - snap_short_length / 2
+
+        for snap_y in (
+            cy - inner_depth / 2,
+            cy + inner_depth / 2,
+        ):
+
+            cutter = cq.Solid.makeCylinder(
+                snap["groove_radius"],
+                snap_short_length,
+                cq.Vector(snap_x, snap_y, snap_z),
+                cq.Vector(1, 0, 0),
+            )
+
+            groove = groove.union(
+                cq.Workplane("XY").newObject([cutter])
+            )
+
         holder = holder.cut(groove)
+
+    # Optional hardcoded test openings on the +X long wall.
+    side_holes = geometry["config"]
+
+    if side_holes["make_side_holes"]:
+
+        hole_width = side_holes["side_hole_width"]
+        hole_height = (
+            side_holes["side_hole_top_z"]
+            - side_holes["side_hole_bottom_z"]
+        )
+        corner_radius = min(
+            side_holes["side_hole_corner_radius"],
+            hole_width / 2,
+            hole_height / 2,
+        )
+        hole_spacing = side_holes["side_hole_spacing"]
+        hole_center_x = (
+            cx
+            + width / 2
+            - wall_thickness / 2
+        )
+        hole_offset_y = (
+            hole_width / 2
+            + hole_spacing / 2
+        )
+
+        openings = cq.Workplane("XY")
+
+        for hole_center_y in (
+            cy - hole_offset_y,
+            cy + hole_offset_y,
+        ):
+
+            opening = (
+                cq.Workplane("YZ")
+                .center(
+                    hole_center_y,
+                    side_holes["side_hole_bottom_z"]
+                    + hole_height / 2
+                )
+                .box(
+                    hole_width,
+                    hole_height,
+                    wall_thickness + 2.0,
+                    centered=(True, True, False)
+                )
+                .edges("|X")
+                .fillet(
+                    corner_radius
+                )
+                .translate(
+                    (
+                        hole_center_x
+                        - (wall_thickness + 2.0) / 2,
+                        0,
+                        0
+                    )
+                )
+            )
+
+            openings = openings.union(opening)
+
+        holder = holder.cut(openings)
 
     return holder
 

@@ -73,6 +73,17 @@ CONFIG = {
     "snap_groove_clearance": 0.10,
     "snap_length": 20.0,
     "snap_z_offset": 3.0,
+
+    # --------------------------------------------------------
+    # Optional side-hole test feature
+    # --------------------------------------------------------
+
+    "make_side_holes": True,
+    "side_hole_width": 10.0,
+    "side_hole_bottom_z": 3.0,
+    "side_hole_top_z": 10.0,
+    "side_hole_spacing": 22.0,
+    "side_hole_corner_radius": 2.0,
 }
 
 

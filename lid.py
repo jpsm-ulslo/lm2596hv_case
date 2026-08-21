@@ -293,6 +293,7 @@ def create_lid_skirt(
 
         snap_radius = snap["radius"]
         snap_length = snap["length"]
+        snap_short_length = snap["short_length"]
         snap_z = snap["z"] - skirt_bottom_z
 
         snap_y = cy - snap_length / 2
@@ -307,6 +308,24 @@ def create_lid_skirt(
                 snap_length,
                 cq.Vector(snap_x, snap_y, snap_z),
                 cq.Vector(0, 1, 0),
+            )
+
+            skirt = skirt.union(
+                cq.Workplane("XY").newObject([bead])
+            )
+
+        snap_x = cx - snap_short_length / 2
+
+        for snap_y in (
+            cy - outer_depth / 2,
+            cy + outer_depth / 2,
+        ):
+
+            bead = cq.Solid.makeCylinder(
+                snap_radius,
+                snap_short_length,
+                cq.Vector(snap_x, snap_y, snap_z),
+                cq.Vector(1, 0, 0),
             )
 
             skirt = skirt.union(

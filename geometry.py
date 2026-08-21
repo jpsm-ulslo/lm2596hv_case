@@ -58,6 +58,14 @@ DEFAULT_CONFIG = {
     "snap_groove_clearance": 0.10,
     "snap_length": 20.0,
     "snap_z_offset": 3.0,
+
+    # Optional two-rectangle test openings on the +X long wall
+    "make_side_holes": False,
+    "side_hole_width": 10.0,
+    "side_hole_bottom_z": 3.0,
+    "side_hole_top_z": 10.0,
+    "side_hole_spacing": 5.0,
+    "side_hole_corner_radius": 2.0,
 }
 
 
@@ -224,6 +232,12 @@ def create_geometry(
     snap_z = (
         skirt_bottom_z
         + cfg["snap_z_offset"]
+    )
+
+    snap_short_length = (
+        cfg["snap_length"]
+        * skirt_outer_width
+        / skirt_outer_depth
     )
 
     # --------------------------------------------------------
@@ -501,6 +515,7 @@ def create_geometry(
                 + cfg["snap_groove_clearance"]
             ),
             "length": cfg["snap_length"],
+            "short_length": snap_short_length,
             "z": snap_z,
         },
     }
